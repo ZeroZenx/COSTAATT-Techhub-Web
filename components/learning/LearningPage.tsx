@@ -10,11 +10,21 @@ import {
   Filter,
   Play,
   Award,
-  CheckCircle
+  CheckCircle,
+  Microscope,
+  FlaskConical,
+  Stethoscope,
+  Network,
+  Plane
 } from 'lucide-react'
 import QuizModule from './QuizModule'
 import ARVRDemo from './ARVRDemo'
 import IoTSimulation from './IoTSimulation'
+import BioLab from './BioLab'
+import ChemistryLab from './ChemistryLab'
+import NursingLab from './NursingLab'
+import AILLM from './AILLM'
+import DroneIoT from './DroneIoT'
 
 const modules = [
   {
@@ -40,6 +50,46 @@ const modules = [
     icon: Code,
     color: 'from-green-500 to-emerald-500',
     component: IoTSimulation,
+  },
+  {
+    id: 'bio-lab',
+    title: 'Biology Laboratory',
+    description: 'Conduct virtual biology experiments and learn about cells, DNA, and enzymes',
+    icon: Microscope,
+    color: 'from-green-500 to-teal-500',
+    component: BioLab,
+  },
+  {
+    id: 'chemistry-lab',
+    title: 'Chemistry Laboratory',
+    description: 'Explore chemical reactions, balance equations, and understand molecular interactions',
+    icon: FlaskConical,
+    color: 'from-blue-500 to-indigo-500',
+    component: ChemistryLab,
+  },
+  {
+    id: 'nursing-lab',
+    title: 'Nursing Lab Simulation',
+    description: 'Practice clinical skills, vital signs assessment, and patient care procedures',
+    icon: Stethoscope,
+    color: 'from-red-500 to-rose-500',
+    component: NursingLab,
+  },
+  {
+    id: 'ai-llm',
+    title: 'AI & LLM Fundamentals',
+    description: 'Understand how Large Language Models work through interactive visualizations',
+    icon: Network,
+    color: 'from-purple-500 to-pink-500',
+    component: AILLM,
+  },
+  {
+    id: 'drone-iot',
+    title: 'Drone & IoT Integration',
+    description: 'Explore how drones integrate with IoT systems for smart automation',
+    icon: Plane,
+    color: 'from-blue-500 to-cyan-500',
+    component: DroneIoT,
   },
 ]
 
@@ -80,7 +130,7 @@ export default function LearningPage() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {modules.map((module, index) => (
             <motion.div
               key={module.id}
@@ -122,7 +172,7 @@ export default function LearningPage() {
             <Award className="h-5 w-5 mr-2 text-accent" />
             Your Learning Progress
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {modules.map((module) => (
               <div key={module.id} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">

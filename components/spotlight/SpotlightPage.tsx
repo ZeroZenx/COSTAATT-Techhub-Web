@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 import { Sparkles, Upload, Filter, Eye, Heart, Share2 } from 'lucide-react'
 import DragDropUpload from '@/components/interactive/DragDropUpload'
 import LiveSearch from '@/components/interactive/LiveSearch'
@@ -36,7 +37,7 @@ const projects = [
     id: '3',
     title: '3D Printed Prosthetic Hand',
     student: 'Sofia Chen',
-    school: 'Fatima College',
+    school: 'Tranquility',
     description: 'Functional prosthetic hand designed and 3D printed',
     type: 'DESIGN_3D',
     imageUrl: '/api/placeholder/600/400',

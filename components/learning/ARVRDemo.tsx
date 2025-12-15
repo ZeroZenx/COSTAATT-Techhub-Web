@@ -9,9 +9,11 @@ import { OrbitControls, Environment, Html, Text, PerspectiveCamera, Stars, Spark
 import * as THREE from 'three'
 
 // Particle System Component
-function ParticleSystem({ position, color, count = 50 }: { position: [number, number, number], color: string, count?: number }) {
+function ParticleSystem({ position, color, count = 50 }: { position: [number, number, number] | THREE.Vector3, color: string, count?: number }) {
   const particles = useRef<THREE.Points>(null)
   const particleGeometry = useRef<THREE.BufferGeometry>(null)
+  
+  const pos = Array.isArray(position) ? new THREE.Vector3(...position) : position
   
   useEffect(() => {
     if (particleGeometry.current) {
@@ -57,7 +59,7 @@ function ParticleSystem({ position, color, count = 50 }: { position: [number, nu
   })
   
   return (
-    <points ref={particles} position={position}>
+    <points ref={particles} position={pos}>
       <bufferGeometry ref={particleGeometry} />
       <pointsMaterial size={0.05} color={color} transparent opacity={0.8} />
     </points>
@@ -137,7 +139,7 @@ function Collectible({ position, onCollect, collected, index }: { position: [num
 }
 
 // Vision Pro Experience - Enhanced Game
-function VisionProScene({ score, setScore, onComplete, level }: { score: number, setScore: (s: number) => void, onComplete: () => void, level: number }) {
+function VisionProScene({ score, setScore, onComplete, level, onUpdate }: { score: number, setScore: (s: number) => void, onComplete: () => void, level: number, onUpdate?: (data: any) => void }) {
   const [collectibles, setCollectibles] = useState(
     Array.from({ length: 5 + level * 2 }, (_, i) => ({
       id: i + 1,
@@ -162,6 +164,12 @@ function VisionProScene({ score, setScore, onComplete, level }: { score: number,
     }
   }, [timeLeft, onComplete])
 
+  useEffect(() => {
+    if (onUpdate) {
+      onUpdate({ collectibles, collectedCount: collectibles.filter(c => c.collected).length, totalCount: collectibles.length, timeLeft, combo })
+    }
+  }, [collectibles, timeLeft, combo, onUpdate])
+
   const handleCollect = (id: number) => {
     setCollectibles(prev => prev.map(item => 
       item.id === id ? { ...item, collected: true } : item
@@ -178,9 +186,6 @@ function VisionProScene({ score, setScore, onComplete, level }: { score: number,
       setTimeout(() => onComplete(), 500)
     }
   }
-
-  const collectedCount = collectibles.filter(c => c.collected).length
-  const totalCount = collectibles.length
 
   return (
     <>
@@ -239,28 +244,14 @@ function VisionProScene({ score, setScore, onComplete, level }: { score: number,
       {/* Floating particles */}
       <Sparkles3D count={100} scale={10} size={2} speed={0.4} />
       
-      {/* Enhanced UI */}
-      <Html position={[0, 5, 0]} center>
-        <div className="bg-black/90 backdrop-blur-md text-white px-8 py-4 rounded-2xl text-center border border-white/20 shadow-2xl">
-          <div className="text-4xl font-bold text-yellow-400 mb-2">{score}</div>
-          <div className="text-sm text-gray-300 mb-2">
-            Collected: <span className="text-green-400 font-bold">{collectedCount}/{totalCount}</span>
-          </div>
-          <div className="text-xs text-gray-400">
-            Time: <span className="text-red-400 font-bold">{timeLeft}s</span> | 
-            Combo: <span className="text-purple-400 font-bold">x{combo}</span>
-          </div>
-        </div>
-      </Html>
-      
-      {/* Combo indicator */}
+      {/* Combo indicator - positioned away from center */}
       {showCombo && (
-        <Html position={[0, 3, 0]} center>
+        <Html position={[-4, 2, 0]}>
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1.5, opacity: 1 }}
+            animate={{ scale: 1.2, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="text-6xl font-bold text-yellow-400 drop-shadow-2xl"
+            className="text-4xl font-bold text-yellow-400 drop-shadow-2xl"
           >
             COMBO x{combo}!
           </motion.div>
@@ -273,12 +264,45 @@ function VisionProScene({ score, setScore, onComplete, level }: { score: number,
   )
 }
 
+// Animated Object Component
+function AnimatedObject({ obj, powerUpActive }: { obj: { id: number, type: string, position: [number, number, number], rotation: [number, number, number] }, powerUpActive: boolean }) {
+  const meshRef = useRef<THREE.Mesh>(null)
+  
+  useFrame(() => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x += 0.01
+      meshRef.current.rotation.y += 0.01
+    }
+  })
+  
+  return (
+    <mesh ref={meshRef} position={obj.position} rotation={obj.rotation}>
+      {obj.type === 'cube' && <boxGeometry args={[0.5, 0.5, 0.5]} />}
+      {obj.type === 'sphere' && <sphereGeometry args={[0.3, 32, 32]} />}
+      {obj.type === 'torus' && <torusGeometry args={[0.3, 0.1, 16, 100]} />}
+      <meshStandardMaterial 
+        color={obj.type === 'cube' ? '#0071e3' : obj.type === 'sphere' ? '#ff3b30' : '#34c759'}
+        emissive={obj.type === 'cube' ? '#0071e3' : obj.type === 'sphere' ? '#ff3b30' : '#34c759'}
+        emissiveIntensity={powerUpActive ? 1 : 0.5}
+        metalness={0.8}
+        roughness={0.2}
+      />
+    </mesh>
+  )
+}
+
 // VR Design Studio - Enhanced
-function VRDesignStudioScene({ score, setScore, onComplete, level }: { score: number, setScore: (s: number) => void, onComplete: () => void, level: number }) {
+function VRDesignStudioScene({ score, setScore, onComplete, level, onUpdate }: { score: number, setScore: (s: number) => void, onComplete: () => void, level: number, onUpdate?: (data: any) => void }) {
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
   const [createdObjects, setCreatedObjects] = useState<Array<{ id: number, type: string, position: [number, number, number], rotation: [number, number, number] }>>([])
   const [targetCount] = useState(3 + level)
   const [powerUpActive, setPowerUpActive] = useState(false)
+  
+  useEffect(() => {
+    if (onUpdate) {
+      onUpdate({ createdObjects, targetCount, powerUpActive })
+    }
+  }, [createdObjects, targetCount, powerUpActive, onUpdate])
   
   const handleCreateObject = (type: string) => {
     const newObject = {
@@ -332,11 +356,11 @@ function VRDesignStudioScene({ score, setScore, onComplete, level }: { score: nu
       
       {/* Template objects with glow */}
       <group>
-        {[
-          { type: 'cube', pos: [-2, 1, 0], color: '#0071e3' },
-          { type: 'sphere', pos: [0, 1, 0], color: '#ff3b30' },
-          { type: 'torus', pos: [2, 1, 0], color: '#34c759' }
-        ].map((obj) => (
+        {([
+          { type: 'cube', pos: [-2, 1, 0] as [number, number, number], color: '#0071e3' },
+          { type: 'sphere', pos: [0, 1, 0] as [number, number, number], color: '#ff3b30' },
+          { type: 'torus', pos: [2, 1, 0] as [number, number, number], color: '#34c759' }
+        ] as const).map((obj) => (
           <group key={obj.type} position={obj.pos}>
             <mesh 
               onClick={() => {
@@ -380,30 +404,9 @@ function VRDesignStudioScene({ score, setScore, onComplete, level }: { score: nu
       </group>
       
       {/* Created objects with physics-like animation */}
-      {createdObjects.map((obj) => {
-        const meshRef = useRef<THREE.Mesh>(null)
-        useFrame(() => {
-          if (meshRef.current) {
-            meshRef.current.rotation.x += 0.01
-            meshRef.current.rotation.y += 0.01
-          }
-        })
-        
-        return (
-          <mesh key={obj.id} ref={meshRef} position={obj.position} rotation={obj.rotation}>
-            {obj.type === 'cube' && <boxGeometry args={[0.5, 0.5, 0.5]} />}
-            {obj.type === 'sphere' && <sphereGeometry args={[0.3, 32, 32]} />}
-            {obj.type === 'torus' && <torusGeometry args={[0.3, 0.1, 16, 100]} />}
-            <meshStandardMaterial 
-              color={obj.type === 'cube' ? '#0071e3' : obj.type === 'sphere' ? '#ff3b30' : '#34c759'}
-              emissive={obj.type === 'cube' ? '#0071e3' : obj.type === 'sphere' ? '#ff3b30' : '#34c759'}
-              emissiveIntensity={powerUpActive ? 1 : 0.5}
-              metalness={0.8}
-              roughness={0.2}
-            />
-          </mesh>
-        )
-      })}
+      {createdObjects.map((obj) => (
+        <AnimatedObject key={obj.id} obj={obj} powerUpActive={powerUpActive} />
+      ))}
       
       {/* Power-up button */}
       <Html position={[4, 3, 0]}>
@@ -420,16 +423,6 @@ function VRDesignStudioScene({ score, setScore, onComplete, level }: { score: nu
         </button>
       </Html>
       
-      {/* Enhanced UI */}
-      <Html position={[0, 4, 0]} center>
-        <div className="bg-black/90 backdrop-blur-md text-white px-8 py-4 rounded-2xl text-center border border-white/20 shadow-2xl">
-          <div className="text-4xl font-bold text-green-400 mb-2">{score}</div>
-          <div className="text-sm text-gray-300">
-            Created: <span className="text-purple-400 font-bold">{createdObjects.length}/{targetCount}</span>
-            {powerUpActive && <span className="ml-2 text-yellow-400 animate-pulse">2x ACTIVE!</span>}
-          </div>
-        </div>
-      </Html>
       
       <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
       <Environment preset="sunset" />
@@ -438,7 +431,7 @@ function VRDesignStudioScene({ score, setScore, onComplete, level }: { score: nu
 }
 
 // AR Overlay Scene - Enhanced
-function AROverlayScene({ score, setScore, onComplete, level }: { score: number, setScore: (s: number) => void, onComplete: () => void, level: number }) {
+function AROverlayScene({ score, setScore, onComplete, level, onUpdate }: { score: number, setScore: (s: number) => void, onComplete: () => void, level: number, onUpdate?: (data: any) => void }) {
   const [overlayVisible, setOverlayVisible] = useState(true)
   const [targetsFound, setTargetsFound] = useState(0)
   const [foundTargets, setFoundTargets] = useState<number[]>([])
@@ -453,6 +446,12 @@ function AROverlayScene({ score, setScore, onComplete, level }: { score: number,
     ] as [number, number, number],
     name: `Target ${i + 1}`
   }))
+  
+  useEffect(() => {
+    if (onUpdate) {
+      onUpdate({ targetsFound, targets: targets.length })
+    }
+  }, [targetsFound, targets.length, onUpdate])
 
   const handleTargetClick = (id: number) => {
     if (foundTargets.includes(id)) return
@@ -568,16 +567,6 @@ function AROverlayScene({ score, setScore, onComplete, level }: { score: number,
         </>
       )}
       
-      {/* Enhanced UI */}
-      <Html position={[0, 4, 0]} center>
-        <div className="bg-black/90 backdrop-blur-md text-white px-8 py-4 rounded-2xl text-center border border-white/20 shadow-2xl">
-          <div className="text-4xl font-bold text-blue-400 mb-2">{score}</div>
-          <div className="text-sm text-gray-300">
-            Targets: <span className="text-green-400 font-bold">{targetsFound}/{targets.length}</span>
-          </div>
-        </div>
-      </Html>
-      
       {/* Controls */}
       <Html position={[4, 3, 0]}>
         <div className="flex flex-col space-y-2">
@@ -665,6 +654,7 @@ export default function ARVRDemo() {
   const [showCompletion, setShowCompletion] = useState(false)
   const [level, setLevel] = useState(1)
   const [achievements, setAchievements] = useState<string[]>([])
+  const [gameData, setGameData] = useState<any>({})
 
   const handleGameComplete = () => {
     setGameComplete(true)
@@ -734,6 +724,45 @@ export default function ARVRDemo() {
                 {demo.title}
               </h1>
               <p className="text-gray-300 text-title-sm font-light">{demo.description}</p>
+            </div>
+          )}
+
+          {/* Score Display - Outside Canvas */}
+          {demo && (
+            <div className="mb-4 flex items-center justify-center">
+              <div className="bg-black/90 backdrop-blur-md text-white px-5 py-2.5 rounded-xl text-center border border-white/20 shadow-lg">
+                <div className="text-2xl font-bold text-yellow-400 mb-0.5">{score}</div>
+                <div className="text-xs text-gray-300">
+                  {demo.id === 'vision-pro' && (
+                    <>
+                      <span className="text-green-400 font-bold">
+                        {gameData.collectedCount || 0}/{gameData.totalCount || 0}
+                      </span> collected | 
+                      <span className="text-red-400 font-bold ml-1">{gameData.timeLeft || 60}s</span>
+                      {gameData.combo > 0 && (
+                        <span className="text-purple-400 font-bold ml-1">x{gameData.combo}</span>
+                      )}
+                    </>
+                  )}
+                  {demo.id === 'vr-design' && (
+                    <>
+                      Created: <span className="text-purple-400 font-bold">
+                        {gameData.createdObjects?.length || 0}/{gameData.targetCount || 3}
+                      </span>
+                      {gameData.powerUpActive && (
+                        <span className="text-yellow-400 animate-pulse ml-2">2x!</span>
+                      )}
+                    </>
+                  )}
+                  {demo.id === 'ar-overlay' && (
+                    <>
+                      Targets: <span className="text-green-400 font-bold">
+                        {gameData.targetsFound || 0}/{gameData.targets || 3}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
@@ -834,6 +863,7 @@ export default function ARVRDemo() {
                     setScore={setScore}
                     onComplete={handleGameComplete}
                     level={level}
+                    onUpdate={setGameData}
                   />
                 </Canvas>
               )}

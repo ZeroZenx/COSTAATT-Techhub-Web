@@ -8,10 +8,10 @@ import { Trophy, Award, Medal, Star, Filter } from 'lucide-react'
 const leaderboardData = [
   { rank: 1, name: 'Emma Headley', school: 'Providence', points: 1250, badges: 12, avatar: '/api/placeholder/50/50' },
   { rank: 2, name: 'Datrice Headley', school: 'St Joseph Convent', points: 1180, badges: 11, avatar: '/api/placeholder/50/50' },
-  { rank: 3, name: 'Melissa Headley', school: 'Fatima College', points: 1100, badges: 10, avatar: '/api/placeholder/50/50' },
+  { rank: 3, name: 'Melissa Headley', school: 'Tranquility', points: 1100, badges: 10, avatar: '/api/placeholder/50/50' },
   { rank: 4, name: 'Grason Rochford', school: 'Providence', points: 980, badges: 9, avatar: '/api/placeholder/50/50' },
   { rank: 5, name: 'Emma Wilson', school: 'St Joseph Convent', points: 920, badges: 8, avatar: '/api/placeholder/50/50' },
-  { rank: 6, name: 'David Lee', school: 'Fatima College', points: 850, badges: 7, avatar: '/api/placeholder/50/50' },
+  { rank: 6, name: 'David Lee', school: 'Tranquility', points: 850, badges: 7, avatar: '/api/placeholder/50/50' },
   { rank: 7, name: 'Luna Martinez', school: 'Providence', points: 780, badges: 6, avatar: '/api/placeholder/50/50' },
   { rank: 8, name: 'Noah Brown', school: 'St Joseph Convent', points: 720, badges: 6, avatar: '/api/placeholder/50/50' },
 ]
@@ -19,7 +19,7 @@ const leaderboardData = [
 const schoolLeaderboard = [
   { rank: 1, school: 'Providence', totalPoints: 3010, students: 45 },
   { rank: 2, school: 'St Joseph Convent', totalPoints: 2880, students: 38 },
-  { rank: 3, school: 'Fatima College', totalPoints: 2750, students: 42 },
+  { rank: 3, school: 'Tranquility', totalPoints: 2750, students: 42 },
 ]
 
 const badges = [

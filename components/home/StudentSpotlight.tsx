@@ -28,7 +28,7 @@ const featuredProjects = [
     id: '3',
     title: '3D Printed Prosthetic Hand',
     student: 'Sofia Chen',
-    school: 'Fatima College',
+    school: 'Tranquility',
     description: 'Functional prosthetic hand designed and 3D printed',
     image: '/api/placeholder/400/300',
     type: 'DESIGN_3D',
