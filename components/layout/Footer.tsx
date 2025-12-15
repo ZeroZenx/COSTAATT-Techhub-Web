@@ -17,15 +17,19 @@ export default function Footer() {
             <div className="space-y-2 text-sm text-gray-400">
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4" />
-                <span>Costa Rica</span>
+                <span>Trinidad</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4" />
-                <span>info@costatechhub.com</span>
+                <a href="mailto:info@costaatt.edu.tt" className="hover:text-white transition-colors">
+                  info@costaatt.edu.tt
+                </a>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4" />
-                <span>+506 1234-5678</span>
+                <a href="tel:8686255030" className="hover:text-white transition-colors">
+                  868 625 5030
+                </a>
               </div>
             </div>
           </div>

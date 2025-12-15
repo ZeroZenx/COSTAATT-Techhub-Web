@@ -65,21 +65,17 @@ export default function LearningPage() {
   }
 
   return (
-    <div className="min-h-screen pt-16 bg-gradient-to-b from-white to-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen pt-16 bg-gray-50">
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center space-x-2 text-primary-600 font-semibold mb-4">
-            <GraduationCap className="h-5 w-5" />
-            <span>Interactive Learning</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-headline-sm md:text-headline font-semibold text-black mb-4 tracking-tight">
             Learn by Doing
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-title-sm text-gray-600 max-w-xl mx-auto font-light">
             Explore interactive modules, take quizzes, and experiment with cutting-edge technology
           </p>
         </motion.div>
@@ -88,26 +84,26 @@ export default function LearningPage() {
           {modules.map((module, index) => (
             <motion.div
               key={module.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.1, duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
               onClick={() => setSelectedModule(module.id)}
-              className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:-translate-y-2"
+              className="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer border border-gray-200"
             >
               <div className={`h-48 bg-gradient-to-br ${module.color} flex items-center justify-center`}>
-                <module.icon className="h-20 w-20 text-white/90 group-hover:scale-110 transition-transform" />
+                <module.icon className="h-16 w-16 text-white/90 group-hover:scale-110 transition-transform" />
               </div>
               
               <div className="p-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                <h3 className="text-title-sm font-semibold text-black mb-2 tracking-tight">
                   {module.title}
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="text-body-sm text-gray-600 mb-6 font-light">
                   {module.description}
                 </p>
                 
-                <div className="flex items-center text-primary-600 font-semibold group-hover:text-primary-700">
-                  <Play className="h-5 w-5 mr-2" />
+                <div className="flex items-center text-accent text-body-sm font-light group-hover:opacity-70 transition-opacity">
+                  <Play className="h-4 w-4 mr-2" />
                   <span>Start Learning</span>
                 </div>
               </div>
@@ -117,24 +113,24 @@ export default function LearningPage() {
 
         {/* Progress Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="mt-16 bg-white rounded-2xl shadow-lg p-8"
+          className="mt-16 bg-white rounded-2xl shadow-sm p-8 border border-gray-200"
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-            <Award className="h-6 w-6 mr-2 text-primary-600" />
+          <h2 className="text-title-sm font-semibold text-black mb-6 tracking-tight flex items-center">
+            <Award className="h-5 w-5 mr-2 text-accent" />
             Your Learning Progress
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {modules.map((module) => (
               <div key={module.id} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold text-gray-900">{module.title}</span>
-                  <span className="text-sm text-gray-600">0%</span>
+                  <span className="text-body-sm font-medium text-gray-900">{module.title}</span>
+                  <span className="text-body-sm text-gray-600 font-light">0%</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-primary-600 h-2 rounded-full" style={{ width: '0%' }} />
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="bg-accent h-1.5 rounded-full transition-all" style={{ width: '0%' }} />
                 </div>
               </div>
             ))}

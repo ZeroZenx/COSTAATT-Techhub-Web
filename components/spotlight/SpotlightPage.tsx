@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Sparkles, Upload, Filter, Eye, Heart, Share2 } from 'lucide-react'
+import DragDropUpload from '@/components/interactive/DragDropUpload'
+import LiveSearch from '@/components/interactive/LiveSearch'
 
 // Mock data - will be replaced with API call
 const projects = [
@@ -10,7 +12,7 @@ const projects = [
     id: '1',
     title: 'VR Art Gallery',
     student: 'Maria Rodriguez',
-    school: 'Lincoln High School',
+    school: 'Providence',
     description: 'An immersive virtual art gallery created using Apple Vision Pro',
     type: 'VR_SKETCH',
     imageUrl: '/api/placeholder/600/400',
@@ -22,7 +24,7 @@ const projects = [
     id: '2',
     title: 'Smart Home IoT System',
     student: 'Carlos Mendez',
-    school: 'Tech Academy',
+    school: 'St Joseph Convent',
     description: 'Automated home system using IoT sensors and AI',
     type: 'AI_DEMO',
     imageUrl: '/api/placeholder/600/400',
@@ -34,7 +36,7 @@ const projects = [
     id: '3',
     title: '3D Printed Prosthetic Hand',
     student: 'Sofia Chen',
-    school: 'Innovation School',
+    school: 'Fatima College',
     description: 'Functional prosthetic hand designed and 3D printed',
     type: 'DESIGN_3D',
     imageUrl: '/api/placeholder/600/400',
@@ -49,6 +51,12 @@ export default function SpotlightPage() {
 
   const filteredProjects = filter === 'all' 
     ? projects 
+    : filter.length > 3 // If it's a search query
+    ? projects.filter(p => 
+        p.title.toLowerCase().includes(filter.toLowerCase()) ||
+        p.student.toLowerCase().includes(filter.toLowerCase()) ||
+        p.school.toLowerCase().includes(filter.toLowerCase())
+      )
     : projects.filter(p => p.type === filter)
 
   return (
@@ -71,6 +79,37 @@ export default function SpotlightPage() {
           </p>
         </motion.div>
 
+        {/* Interactive Search */}
+        <div className="mb-8">
+            <LiveSearch
+            items={projects}
+            onSelect={(project) => {
+              // Scroll to project or navigate to detail page
+              const element = document.getElementById(`project-${project.id}`)
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              }
+            }}
+            onSearch={(query) => {
+              // Filter projects based on search
+              if (query.trim()) {
+                setFilter(query.toLowerCase())
+              } else {
+                setFilter('all')
+              }
+            }}
+            getItemLabel={(project) => `${project.title} - ${project.student}`}
+            getItemKey={(project) => project.id}
+            placeholder="Search projects by title, student, or school..."
+            renderItem={(project) => (
+              <div>
+                <p className="font-medium text-gray-900">{project.title}</p>
+                <p className="text-sm text-gray-500">{project.student} • {project.school}</p>
+              </div>
+            )}
+          />
+        </div>
+
         {/* Filters and Upload */}
         <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
           <div className="flex items-center space-x-2">
@@ -81,8 +120,8 @@ export default function SpotlightPage() {
                 onClick={() => setFilter(type)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   filter === type
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                    ? 'bg-accent text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
                 }`}
               >
                 {type === 'all' ? 'All Projects' : type.replace('_', ' ')}
@@ -90,10 +129,13 @@ export default function SpotlightPage() {
             ))}
           </div>
           
-          <button className="flex items-center space-x-2 px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors">
+          <Link
+            href="/submit"
+            className="flex items-center space-x-2 px-6 py-3 bg-accent text-white rounded-full font-medium hover:bg-accent-700 transition-colors"
+          >
             <Upload className="h-5 w-5" />
             <span>Submit Your Project</span>
-          </button>
+          </Link>
         </div>
 
         {/* Featured Projects */}

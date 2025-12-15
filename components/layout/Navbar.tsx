@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Menu, X, Sparkles, User, LogIn } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import NotificationBell from '@/components/interactive/NotificationBell'
 
 const navItems = [
   { name: 'Home', href: '/' },
@@ -28,7 +29,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-10">
+          <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
               <Link
                 key={item.name}
@@ -38,6 +39,7 @@ export default function Navbar() {
                 {item.name}
               </Link>
             ))}
+            <NotificationBell />
             <Link
               href="/login"
               className="text-accent hover:text-accent-700 text-body-sm font-light transition-colors duration-200"

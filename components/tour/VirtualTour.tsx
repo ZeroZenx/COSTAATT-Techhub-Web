@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Environment, Html, Text } from '@react-three/drei'
+import { OrbitControls, Environment, Html } from '@react-three/drei'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Play, Info, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
@@ -54,74 +54,141 @@ const hotspots: Hotspot[] = [
   },
 ]
 
-function HotspotMarker({ hotspot, onClick }: { hotspot: Hotspot; onClick: () => void }) {
+function HotspotMarker({ 
+  hotspot, 
+  onClick, 
+  isHovered = false 
+}: { 
+  hotspot: Hotspot
+  onClick: () => void
+  isHovered?: boolean
+}) {
   return (
     <group position={hotspot.position}>
-      <mesh onClick={onClick}>
-        <sphereGeometry args={[0.1, 16, 16]} />
-        <meshStandardMaterial color="#0ea5e9" emissive="#0ea5e9" emissiveIntensity={0.5} />
+      <mesh onClick={onClick} onPointerOver={() => {}} onPointerOut={() => {}}>
+        <sphereGeometry args={[0.15, 16, 16]} />
+        <meshStandardMaterial 
+          color={isHovered ? "#0071e3" : "#0ea5e9"} 
+          emissive={isHovered ? "#0071e3" : "#0ea5e9"} 
+          emissiveIntensity={isHovered ? 0.8 : 0.5}
+        />
       </mesh>
-      <Html distanceFactor={2} position={[0, 0.3, 0]}>
-        <div className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-1 shadow-lg text-sm font-semibold text-gray-800 whitespace-nowrap">
+      <Html distanceFactor={2} position={[0, 0.4, 0]} center>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5 shadow-lg text-sm font-medium text-gray-900 whitespace-nowrap border border-gray-200"
+        >
           {hotspot.title}
-        </div>
+        </motion.div>
       </Html>
     </group>
   )
 }
 
 function Scene({ onHotspotClick }: { onHotspotClick: (hotspot: Hotspot) => void }) {
+  const [hoveredHotspot, setHoveredHotspot] = useState<string | null>(null)
+  
+  // Note: useState in Scene component requires 'use client' directive
+  // This is handled by the parent component
+
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[10, 10, 5]} intensity={1} />
+      <ambientLight intensity={0.6} />
+      <directionalLight position={[10, 10, 5]} intensity={1.2} />
       <pointLight position={[-10, -10, -5]} intensity={0.5} />
+      <spotLight position={[0, 10, 0]} angle={0.3} penumbra={1} intensity={0.5} />
       
       {/* Room floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[20, 20]} />
-        <meshStandardMaterial color="#f0f0f0" />
+        <meshStandardMaterial color="#f5f5f5" />
       </mesh>
       
       {/* Room walls */}
       <mesh position={[0, 2.5, -5]}>
         <boxGeometry args={[20, 5, 0.2]} />
-        <meshStandardMaterial color="#e0e0e0" />
+        <meshStandardMaterial color="#e5e5e5" />
       </mesh>
       
-      {/* Tech Hub objects representation */}
+      {/* Tech Hub objects representation with hover effects */}
       <group>
         {/* Vision Pro station */}
-        <mesh position={[2, 0.5, 0]}>
+        <mesh 
+          position={[2, 0.5, 0]}
+          onPointerOver={() => setHoveredHotspot('vision-pro')}
+          onPointerOut={() => setHoveredHotspot(null)}
+        >
           <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color="#1d1d1f" />
+          <meshStandardMaterial 
+            color={hoveredHotspot === 'vision-pro' ? '#0071e3' : '#1d1d1f'}
+            emissive={hoveredHotspot === 'vision-pro' ? '#0071e3' : '#000000'}
+            emissiveIntensity={hoveredHotspot === 'vision-pro' ? 0.3 : 0}
+          />
         </mesh>
         
         {/* Drone area */}
-        <mesh position={[-2, 0.3, 1]}>
+        <mesh 
+          position={[-2, 0.3, 1]}
+          onPointerOver={() => setHoveredHotspot('drones')}
+          onPointerOut={() => setHoveredHotspot(null)}
+        >
           <boxGeometry args={[1.5, 0.6, 1.5]} />
-          <meshStandardMaterial color="#2563eb" />
+          <meshStandardMaterial 
+            color={hoveredHotspot === 'drones' ? '#0071e3' : '#2563eb'}
+            emissive={hoveredHotspot === 'drones' ? '#0071e3' : '#000000'}
+            emissiveIntensity={hoveredHotspot === 'drones' ? 0.3 : 0}
+          />
         </mesh>
         
         {/* 3D Printer */}
-        <mesh position={[0, 0.4, -2]}>
+        <mesh 
+          position={[0, 0.4, -2]}
+          onPointerOver={() => setHoveredHotspot('3d-printer')}
+          onPointerOut={() => setHoveredHotspot(null)}
+        >
           <boxGeometry args={[1.2, 0.8, 1.2]} />
-          <meshStandardMaterial color="#10b981" />
+          <meshStandardMaterial 
+            color={hoveredHotspot === '3d-printer' ? '#0071e3' : '#10b981'}
+            emissive={hoveredHotspot === '3d-printer' ? '#0071e3' : '#000000'}
+            emissiveIntensity={hoveredHotspot === '3d-printer' ? 0.3 : 0}
+          />
         </mesh>
         
         {/* IoT Station */}
-        <mesh position={[-2, 0.3, -1]}>
+        <mesh 
+          position={[-2, 0.3, -1]}
+          onPointerOver={() => setHoveredHotspot('iot-kits')}
+          onPointerOut={() => setHoveredHotspot(null)}
+        >
           <boxGeometry args={[1, 0.6, 1]} />
-          <meshStandardMaterial color="#f59e0b" />
+          <meshStandardMaterial 
+            color={hoveredHotspot === 'iot-kits' ? '#0071e3' : '#f59e0b'}
+            emissive={hoveredHotspot === 'iot-kits' ? '#0071e3' : '#000000'}
+            emissiveIntensity={hoveredHotspot === 'iot-kits' ? 0.3 : 0}
+          />
         </mesh>
       </group>
       
       {/* Hotspots */}
       {hotspots.map((hotspot) => (
-        <HotspotMarker key={hotspot.id} hotspot={hotspot} onClick={() => onHotspotClick(hotspot)} />
+        <HotspotMarker 
+          key={hotspot.id} 
+          hotspot={hotspot} 
+          onClick={() => onHotspotClick(hotspot)}
+          isHovered={hoveredHotspot === hotspot.id}
+        />
       ))}
       
-      <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
+      <OrbitControls 
+        enablePan={true} 
+        enableZoom={true} 
+        enableRotate={true}
+        minDistance={3}
+        maxDistance={15}
+        minPolarAngle={0}
+        maxPolarAngle={Math.PI / 2}
+      />
       <Environment preset="city" />
     </>
   )
@@ -131,21 +198,21 @@ export default function VirtualTour() {
   const [selectedHotspot, setSelectedHotspot] = useState<Hotspot | null>(null)
 
   return (
-    <div className="min-h-screen pt-16 bg-gradient-to-br from-primary-50 to-accent-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen pt-16 bg-white">
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
         <Link
           href="/"
-          className="inline-flex items-center text-primary-600 hover:text-primary-700 mb-6 font-medium"
+          className="inline-flex items-center text-accent hover:text-accent-700 mb-8 font-light"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Home
         </Link>
         
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-12">
+          <h1 className="text-headline-sm md:text-headline font-semibold text-black mb-4 tracking-tight">
             Interactive Virtual Tour
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-title-sm text-gray-600 max-w-xl mx-auto font-light">
             Click on the glowing hotspots to explore our cutting-edge technology
           </p>
         </div>
@@ -163,13 +230,13 @@ export default function VirtualTour() {
         </div>
 
         {/* Instructions */}
-        <div className="mt-6 bg-white rounded-xl p-6 shadow-lg">
-          <h3 className="font-semibold text-gray-900 mb-2">How to Navigate:</h3>
-          <ul className="space-y-2 text-gray-600">
+        <div className="mt-8 bg-gray-50 rounded-2xl p-6 border border-gray-200">
+          <h3 className="text-title-sm font-semibold text-black mb-4 tracking-tight">How to Navigate:</h3>
+          <ul className="space-y-2 text-body-sm text-gray-600 font-light">
             <li>• Click and drag to rotate the view</li>
             <li>• Scroll to zoom in/out</li>
+            <li>• Hover over devices to see them highlight</li>
             <li>• Click on blue glowing hotspots to learn more</li>
-            <li>• Use arrow keys for fine control</li>
           </ul>
         </div>
       </div>
@@ -193,10 +260,10 @@ export default function VirtualTour() {
             >
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                  <h2 className="text-headline-sm font-semibold text-black mb-2 tracking-tight">
                     {selectedHotspot.title}
                   </h2>
-                  <span className="inline-block px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold">
+                  <span className="inline-block px-3 py-1 bg-accent/10 text-accent rounded-md text-xs font-medium">
                     {selectedHotspot.type === 'device' ? 'Device' : 'Area'}
                   </span>
                 </div>
@@ -208,13 +275,13 @@ export default function VirtualTour() {
                 </button>
               </div>
               
-              <p className="text-gray-700 text-lg mb-6">
+              <p className="text-body text-gray-600 mb-8 font-light leading-relaxed">
                 {selectedHotspot.description}
               </p>
               
               {selectedHotspot.videoUrl && (
                 <div className="mb-6">
-                  <button className="flex items-center space-x-2 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                  <button className="flex items-center space-x-2 px-6 py-3 bg-accent text-white rounded-full hover:bg-accent-700 transition-colors font-medium">
                     <Play className="h-5 w-5" />
                     <span>Watch Demo Video</span>
                   </button>
@@ -222,10 +289,10 @@ export default function VirtualTour() {
               )}
               
               <div className="flex items-center space-x-4">
-                <button className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                <button className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors font-medium">
                   Learn More
                 </button>
-                <button className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                <button className="px-6 py-3 bg-accent text-white rounded-full hover:bg-accent-700 transition-colors font-medium">
                   Book Experience
                 </button>
               </div>

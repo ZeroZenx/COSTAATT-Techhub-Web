@@ -4,45 +4,85 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Calendar, Clock, MapPin, ArrowRight, Users } from 'lucide-react'
 import { format } from 'date-fns'
+import CountdownTimer from '@/components/interactive/CountdownTimer'
 
-// Mock data - will be replaced with API call
-const upcomingEvents = [
-  {
-    id: '1',
-    title: 'VR Design Workshop',
-    description: 'Learn to create immersive VR experiences using Apple Vision Pro',
-    date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-    time: '10:00 AM',
-    location: 'Tech Hub - VR Lab',
-    capacity: 20,
-    registered: 15,
-    type: 'WORKSHOP',
-  },
-  {
-    id: '2',
-    title: 'Drone Pilot Training',
-    description: 'Master drone flying techniques and aerial photography',
-    date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-    time: '2:00 PM',
-    location: 'Tech Hub - Outdoor Space',
-    capacity: 15,
-    registered: 8,
-    type: 'DEMO',
-  },
-  {
-    id: '3',
-    title: '3D Printing Masterclass',
-    description: 'From design to print: Create your own 3D models',
-    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    time: '11:00 AM',
-    location: 'Tech Hub - Maker Lab',
-    capacity: 25,
-    registered: 22,
-    type: 'WORKSHOP',
-  },
-]
+interface Event {
+  id: string
+  title: string
+  description: string
+  startDate: Date
+  endDate: Date
+  location: string
+  maxCapacity: number
+  currentCapacity: number
+  type: string
+}
 
-export default function UpcomingEvents() {
+interface UpcomingEventsProps {
+  events?: Event[]
+}
+
+export default function UpcomingEvents({ events: propEvents }: UpcomingEventsProps) {
+  // Fallback to mock data if no events provided
+  const mockEvents: Event[] = [
+    {
+      id: '1',
+      title: 'VR Design Workshop',
+      description: 'Learn to create immersive VR experiences using Apple Vision Pro',
+      startDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+      endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000),
+      location: 'Tech Hub - VR Lab',
+      maxCapacity: 20,
+      currentCapacity: 15,
+      type: 'WORKSHOP',
+    },
+    {
+      id: '2',
+      title: 'Drone Pilot Training',
+      description: 'Master drone flying techniques and aerial photography',
+      startDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+      endDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000),
+      location: 'Tech Hub - Outdoor Space',
+      maxCapacity: 15,
+      currentCapacity: 8,
+      type: 'DEMO',
+    },
+    {
+      id: '3',
+      title: '3D Printing Masterclass',
+      description: 'From design to print: Create your own 3D models',
+      startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000),
+      location: 'Tech Hub - Maker Lab',
+      maxCapacity: 25,
+      currentCapacity: 22,
+      type: 'WORKSHOP',
+    },
+  ]
+
+  const upcomingEvents = propEvents && propEvents.length > 0 
+    ? propEvents.map(e => ({
+        id: e.id,
+        title: e.title,
+        description: e.description,
+        date: e.startDate,
+        time: format(e.startDate, 'h:mm a'),
+        location: e.location,
+        capacity: e.maxCapacity,
+        registered: e.currentCapacity,
+        type: e.type,
+      }))
+    : mockEvents.map(e => ({
+        id: e.id,
+        title: e.title,
+        description: e.description,
+        date: e.startDate,
+        time: format(e.startDate, 'h:mm a'),
+        location: e.location,
+        capacity: e.maxCapacity,
+        registered: e.currentCapacity,
+        type: e.type,
+      }))
   return (
     <section className="py-24 bg-white">
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">

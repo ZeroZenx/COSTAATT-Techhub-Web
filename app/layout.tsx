@@ -5,6 +5,7 @@ import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import ChatBot from '@/components/chatbot/ChatBot'
 import { Providers } from './providers'
 
 const inter = Inter({ 
@@ -87,6 +88,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <ChatBot />
           <Toaster 
             position="top-right"
             toastOptions={{

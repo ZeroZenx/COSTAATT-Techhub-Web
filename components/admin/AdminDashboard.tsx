@@ -25,8 +25,8 @@ const tabs = [
 
 // Mock data - will be replaced with API calls
 const mockBookings = [
-  { id: '1', school: 'Lincoln High', date: '2024-01-15', time: '10:00 AM', students: 25, status: 'PENDING' },
-  { id: '2', school: 'Tech Academy', date: '2024-01-16', time: '2:00 PM', students: 20, status: 'CONFIRMED' },
+  { id: '1', school: 'Providence', date: '2024-01-15', time: '10:00 AM', students: 25, status: 'PENDING' },
+  { id: '2', school: 'St Joseph Convent', date: '2024-01-16', time: '2:00 PM', students: 20, status: 'CONFIRMED' },
 ]
 
 const mockSubmissions = [

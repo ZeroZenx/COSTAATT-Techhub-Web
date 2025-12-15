@@ -8,7 +8,7 @@ import { format } from 'date-fns'
 const vendors = [
   {
     id: '1',
-    name: 'Dr. Sarah Chen',
+    name: 'Roger Chung',
     company: 'Tech Innovations Inc.',
     bio: 'Expert in AR/VR development with 15+ years of experience. Creator of award-winning educational VR applications.',
     expertise: 'AR/VR Development, Spatial Computing',
@@ -20,7 +20,7 @@ const vendors = [
   },
   {
     id: '2',
-    name: 'Marcus Rodriguez',
+    name: 'Rene Rochford',
     company: 'Drone Dynamics',
     bio: 'Professional drone pilot and aerial photographer. Specializes in educational drone programs for schools.',
     expertise: 'Drone Technology, Aerial Photography',
@@ -32,7 +32,7 @@ const vendors = [
   },
   {
     id: '3',
-    name: 'Emily Watson',
+    name: 'Felix Pitt',
     company: '3D Print Solutions',
     bio: '3D printing specialist and maker space coordinator. Passionate about bringing student designs to life.',
     expertise: '3D Printing, Rapid Prototyping',
