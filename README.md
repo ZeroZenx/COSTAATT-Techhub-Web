@@ -80,6 +80,13 @@ The app is ready for deployment on Vercel, Netlify, or any Node.js hosting platf
 - Set secure `NEXTAUTH_SECRET`
 - Configure environment variables
 
+## Credits
+
+Special thanks to the team members who contributed to this project:
+
+- **Melissa Headley** - Concept & Vision
+- **Emma Headley** - Testing & Design
+
 ## License
 
 MIT
