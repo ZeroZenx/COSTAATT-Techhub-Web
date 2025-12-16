@@ -1,7 +1,12 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Canvas, useLoader, useFrame } from '@react-three/fiber'
+import { OrbitControls, Environment } from '@react-three/drei'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js'
+import * as THREE from 'three'
 import { 
   Microscope, 
   FlaskConical, 
@@ -83,6 +88,65 @@ const experiments: Experiment[] = [
     difficulty: 'Advanced'
   }
 ]
+
+// DNA 3D Model Component
+function DNAModel() {
+  const groupRef = useRef<THREE.Group>(null)
+  
+  // Load materials first, then object
+  const materials = useLoader(MTLLoader, '/3D/DNA.mtl')
+  const obj = useLoader(OBJLoader, '/3D/DNA.obj', (loader) => {
+    materials.preload()
+    loader.setMaterials(materials)
+  })
+  
+  useFrame((state) => {
+    if (groupRef.current) {
+      const time = state.clock.getElapsedTime()
+      // Rotate the DNA model
+      groupRef.current.rotation.y = time * 0.3
+      // Gentle floating animation
+      groupRef.current.position.y = Math.sin(time * 0.8) * 0.2
+    }
+  })
+  
+  return (
+    <group ref={groupRef} position={[0, 0, 0]} scale={[0.5, 0.5, 0.5]}>
+      <primitive object={obj} />
+      {/* Add glow effect */}
+      <pointLight position={[0, 2, 0]} intensity={1} color="#10b981" />
+      <pointLight position={[0, -2, 0]} intensity={0.5} color="#10b981" />
+    </group>
+  )
+}
+
+// DNA 3D Viewer Component
+function DNA3DViewer() {
+  return (
+    <div className="h-96 bg-gradient-to-br from-green-900 to-emerald-900 rounded-xl overflow-hidden relative">
+      <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+        <ambientLight intensity={0.6} />
+        <directionalLight position={[5, 5, 5]} intensity={1} />
+        <pointLight position={[-5, -5, -5]} intensity={0.5} color="#10b981" />
+        <Suspense fallback={null}>
+          <DNAModel />
+        </Suspense>
+        <OrbitControls 
+          enablePan={true} 
+          enableZoom={true} 
+          enableRotate={true}
+          minDistance={3}
+          maxDistance={10}
+        />
+        <Environment preset="sunset" />
+      </Canvas>
+      <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm px-3 py-2 rounded-lg text-white text-xs">
+        <p className="font-semibold mb-1">Interactive DNA Model</p>
+        <p className="text-gray-300">Drag to rotate • Scroll to zoom</p>
+      </div>
+    </div>
+  )
+}
 
 // Virtual Microscope Component
 function VirtualMicroscope({ completedSteps, onStepComplete }: { completedSteps: number[], onStepComplete: (step: number) => void }) {
@@ -763,6 +827,32 @@ export default function BioLab() {
                   </a>
                 </p>
               </div>
+
+              {/* 3D DNA Model from local files */}
+              {experiment.id === 'dna-extraction' && (
+                <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200 mt-6">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="p-3 bg-green-100 rounded-xl">
+                      <Dna className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div>
+                      <h2 className="text-title-sm font-semibold text-black">3D DNA Structure</h2>
+                      <p className="text-xs text-gray-600 font-light">
+                        Interactive DNA double helix model
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <DNA3DViewer />
+                  
+                  <div className="mt-4 p-3 bg-green-50 rounded-lg">
+                    <p className="text-xs text-gray-700 font-light">
+                      <strong className="text-green-700">DNA Structure:</strong> The double helix consists of two strands 
+                      of nucleotides connected by hydrogen bonds between complementary base pairs (A-T, G-C).
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Experiment Steps */}
