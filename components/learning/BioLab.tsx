@@ -18,7 +18,8 @@ import {
   ZoomOut,
   Move,
   RotateCw,
-  Ear
+  Ear,
+  Eye
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -685,6 +686,75 @@ export default function BioLab() {
                   {' on '}
                   <a
                     href="https://sketchfab.com?utm_medium=embed&utm_campaign=share-popup&utm_content=c5a0e016fe23493e912a34487251396c"
+                    target="_blank"
+                    rel="nofollow"
+                    style={{ fontWeight: 'bold', color: '#1CAAD9', textDecoration: 'none' }}
+                  >
+                    Sketchfab
+                  </a>
+                </p>
+              </div>
+
+              {/* 3D Eye Model */}
+              <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200 mt-6">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="p-3 bg-green-100 rounded-xl">
+                    <Eye className="h-6 w-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-title-sm font-semibold text-black">3D Eye Anatomy</h2>
+                    <p className="text-xs text-gray-600 font-light">
+                      Interactive eye structure visualization
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="sketchfab-embed-wrapper rounded-xl overflow-hidden" style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', maxWidth: '100%' }}>
+                  <iframe
+                    title="Just an eye!"
+                    frameBorder="0"
+                    allowFullScreen
+                    allow="autoplay; fullscreen; xr-spatial-tracking"
+                    src="https://sketchfab.com/models/ac6d700dba9247f79f8bedc4410a9e11/embed"
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      border: 'none'
+                    }}
+                    {...({
+                      'mozallowfullscreen': 'true',
+                      'webkitallowfullscreen': 'true',
+                      'xr-spatial-tracking': 'true',
+                      'execution-while-out-of-viewport': 'true',
+                      'execution-while-not-rendered': 'true',
+                      'web-share': 'true'
+                    } as any)}
+                  />
+                </div>
+                <p style={{ fontSize: '13px', fontWeight: 'normal', margin: '5px', color: '#4A4A4A', marginTop: '8px' }}>
+                  <a
+                    href="https://sketchfab.com/3d-models/just-an-eye-ac6d700dba9247f79f8bedc4410a9e11?utm_medium=embed&utm_campaign=share-popup&utm_content=ac6d700dba9247f79f8bedc4410a9e11"
+                    target="_blank"
+                    rel="nofollow"
+                    style={{ fontWeight: 'bold', color: '#1CAAD9', textDecoration: 'none' }}
+                  >
+                    Just an eye!
+                  </a>
+                  {' by '}
+                  <a
+                    href="https://sketchfab.com/henryrietra?utm_medium=embed&utm_campaign=share-popup&utm_content=ac6d700dba9247f79f8bedc4410a9e11"
+                    target="_blank"
+                    rel="nofollow"
+                    style={{ fontWeight: 'bold', color: '#1CAAD9', textDecoration: 'none' }}
+                  >
+                    Henry Rietra
+                  </a>
+                  {' on '}
+                  <a
+                    href="https://sketchfab.com?utm_medium=embed&utm_campaign=share-popup&utm_content=ac6d700dba9247f79f8bedc4410a9e11"
                     target="_blank"
                     rel="nofollow"
                     style={{ fontWeight: 'bold', color: '#1CAAD9', textDecoration: 'none' }}
