@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { LogIn, Mail, Lock, User, School } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 
 export default function LoginPage() {
@@ -17,12 +18,62 @@ export default function LoginPage() {
     role: 'STUDENT',
   })
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const from = searchParams.get('from') || '/'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement authentication
-    toast.success(isLogin ? 'Logged in successfully!' : 'Account created successfully!')
-    router.push('/')
+
+    if (isLogin) {
+      const res = await signIn('credentials', {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+      })
+
+      if (res?.ok) {
+        toast.success('Logged in successfully!')
+        router.push(from)
+        return
+      }
+
+      toast.error('Invalid credentials')
+      return
+    }
+
+    // signup
+    const resp = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        school: formData.school,
+        role: formData.role,
+      }),
+    })
+
+    if (!resp.ok) {
+      const err = (await resp.json().catch(() => null)) as any
+      toast.error(err?.error || 'Sign up failed')
+      return
+    }
+
+    // auto-login after signup
+    const res = await signIn('credentials', {
+      redirect: false,
+      email: formData.email,
+      password: formData.password,
+    })
+
+    if (res?.ok) {
+      toast.success('Account created successfully!')
+      router.push(from)
+      return
+    }
+
+    toast('Account created. Please sign in.', { icon: 'ℹ️' })
   }
 
   return (

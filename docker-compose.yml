@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: techhub
+      POSTGRES_PASSWORD: techhub_password
+      POSTGRES_DB: techhub
+    ports:
+      - "5432:5432"
+    volumes:
+      - techhub_db:/var/lib/postgresql/data
+
+volumes:
+  techhub_db:

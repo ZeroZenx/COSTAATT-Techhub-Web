@@ -1,32 +1,47 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export function middleware(request: NextRequest) {
-  const response = NextResponse.next()
+const PUBLIC_PATHS = ["/login"]; // add /health if needed
 
-  // Add security headers (some are also in next.config.js, but middleware allows dynamic headers)
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('X-Frame-Options', 'SAMEORIGIN')
-  response.headers.set('X-XSS-Protection', '1; mode=block')
-  response.headers.set('Referrer-Policy', 'origin-when-cross-origin')
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  // Rate limiting headers (basic - implement proper rate limiting in production)
-  response.headers.set('X-RateLimit-Limit', '100')
-  response.headers.set('X-RateLimit-Remaining', '99')
+  // Security headers
+  const response = NextResponse.next();
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "SAMEORIGIN");
+  response.headers.set("Referrer-Policy", "origin-when-cross-origin");
 
-  return response
+  // Allow auth endpoints and static assets
+  if (
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/_next") ||
+    pathname === "/favicon.ico" ||
+    pathname === "/robots.txt" ||
+    pathname === "/sitemap.xml" ||
+    pathname.startsWith("/public")
+  ) {
+    return response;
+  }
+
+  // Allow explicit public paths
+  if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+    return response;
+  }
+
+  // Require session for all other routes (internal app)
+  const token = await getToken({ req: request });
+  if (!token) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("from", pathname);
+    return NextResponse.redirect(url);
+  }
+
+  return response;
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
-}
-
+  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico).*)"],
+};
