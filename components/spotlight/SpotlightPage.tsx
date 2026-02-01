@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Sparkles, Upload, Filter, Eye, Heart, Share2 } from 'lucide-react'
 import DragDropUpload from '@/components/interactive/DragDropUpload'
@@ -154,7 +155,13 @@ export default function SpotlightPage() {
                 >
                   <div className="relative h-64 bg-gradient-to-br from-primary-400 to-accent-400">
                     {project.imageUrl ? (
-                      <img src={project.imageUrl} alt={project.title} className="w-full h-full object-cover" />
+                      <Image
+                        src={project.imageUrl}
+                        alt={project.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-white/50">
                         <Eye className="h-24 w-24" />
@@ -215,7 +222,13 @@ export default function SpotlightPage() {
               >
                 <div className="relative h-48 bg-gradient-to-br from-primary-400 to-accent-400">
                   {project.imageUrl ? (
-                    <img src={project.imageUrl} alt={project.title} className="w-full h-full object-cover" />
+                    <Image
+                      src={project.imageUrl}
+                      alt={project.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-white/50">
                       <Eye className="h-16 w-16" />

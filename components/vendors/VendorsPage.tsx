@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Users, Video, Calendar, Award, ExternalLink } from 'lucide-react'
 import { format } from 'date-fns'
+import Image from 'next/image'
 
 // Mock data - will be replaced with API call
 const vendors = [
@@ -78,7 +79,13 @@ export default function VendorsPage() {
                 <div className="md:col-span-1">
                   <div className="relative aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-primary-400 to-accent-400">
                     {vendor.imageUrl ? (
-                      <img src={vendor.imageUrl} alt={vendor.name} className="w-full h-full object-cover" />
+                      <Image
+                        src={vendor.imageUrl}
+                        alt={vendor.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-white/50">
                         <Users className="h-24 w-24" />

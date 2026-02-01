@@ -2,6 +2,7 @@
 
 import { Calendar, Clock, MapPin, Users, ArrowRight } from 'lucide-react'
 import { format } from 'date-fns'
+import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 
@@ -31,7 +32,13 @@ export default function EventCard({ event, onBook }: EventCardProps) {
     >
       <div className="relative h-48 bg-gradient-to-br from-primary-400 to-accent-400">
         {event.imageUrl ? (
-          <img src={event.imageUrl} alt={event.title} className="w-full h-full object-cover" />
+          <Image
+            src={event.imageUrl}
+            alt={event.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 33vw"
+          />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-white/50">
             <Calendar className="h-16 w-16" />

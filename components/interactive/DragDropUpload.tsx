@@ -25,12 +25,15 @@ export default function DragDropUpload({
   const [isDragging, setIsDragging] = useState(false)
   const [files, setFiles] = useState<FileWithPreview[]>([])
 
-  const validateFile = (file: File): string | null => {
-    if (file.size > maxSize) {
-      return `File ${file.name} exceeds maximum size of ${maxSize / 1024 / 1024}MB`
-    }
-    return null
-  }
+  const validateFile = useCallback(
+    (file: File): string | null => {
+      if (file.size > maxSize) {
+        return `File ${file.name} exceeds maximum size of ${maxSize / 1024 / 1024}MB`
+      }
+      return null
+    },
+    [maxSize]
+  )
 
   const handleFiles = useCallback(
     (fileList: FileList | File[]) => {
@@ -62,7 +65,7 @@ export default function DragDropUpload({
         toast.success(`${validFiles.length} file(s) added`)
       }
     },
-    [files, maxFiles, maxSize, onFilesSelected]
+    [files, maxFiles, onFilesSelected, validateFile]
   )
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -159,6 +162,7 @@ export default function DragDropUpload({
                 className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-gray-200"
               >
                 {file.preview ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={file.preview}
                     alt={file.name}

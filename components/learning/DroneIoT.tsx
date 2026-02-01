@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Plane, 
@@ -285,14 +285,17 @@ export default function DroneIoT() {
   const [dronePosition, setDronePosition] = useState<[number, number, number]>([0, 2, 0])
   const [droneRotation, setDroneRotation] = useState<[number, number, number]>([0, 0, 0])
   
-  const waypoints: [number, number, number][] = [
-    [0, 2, 0],
-    [3, 2, 2],
-    [3, 2, -2],
-    [-3, 2, -2],
-    [-3, 2, 2],
-    [0, 2, 0]
-  ]
+  const waypoints: [number, number, number][] = useMemo(
+    () => [
+      [0, 2, 0],
+      [3, 2, 2],
+      [3, 2, -2],
+      [-3, 2, -2],
+      [-3, 2, 2],
+      [0, 2, 0],
+    ],
+    []
+  )
   
   // Flight simulation
   useEffect(() => {
